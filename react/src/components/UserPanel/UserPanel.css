@@ -1,0 +1,10 @@
+.user-panel {
+    transition: transform 0.3s ease-in-out;
+    background-color: #95c482;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.user-panel:hover {
+    transform: scale(1.05);
+}

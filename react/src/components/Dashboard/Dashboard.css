@@ -1,0 +1,24 @@
+.dashboard {
+    display: flex;
+    height: 100vh;
+    flex-wrap: wrap;
+}
+
+
+.sidebar {
+    width: 250px;
+    background-color: #95c482;
+    color: white;
+    padding: 15px;
+}
+
+.sidebar .logo {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
