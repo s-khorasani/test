@@ -1,21 +1,60 @@
-import React from 'react';
 import './PlantList.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const PlantList = () => {
-    const plants = [
-        { id: 1, name: 'Monstera Deliciosa', imgSrc: '/path/to/monstera.jpg', description: 'Tropische plant met grote bladeren' },
-        { id: 2, name: 'Ficus Lyrata', imgSrc: '/path/to/ficus.jpg', description: 'Populaire kamerplant met grote groene bladeren' },
-    ];
+    const [plants, setPlants] = useState([]);
+    const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        setIsLoading(true);
+
+        axios.get('http://localhost:8080/api')
+            .then(response => {
+                if (Array.isArray(response.data)) {
+                    setPlants(response.data);
+                } else {
+                    // Log unexpected response format
+                    console.error('Unexpected response format:', response.data);
+                    setError('Unexpected data format received from server');
+                }
+            })
+            .catch(error => {
+                if (error.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.error('Server responded with an error:', error.response.status, error.response.data);
+                    setError(`Server error: ${error.response.status}`);
+                } else if (error.request) {
+                    // The request was made but no response was received
+                    console.error('No response received:', error.request);
+                    setError('No response from server');
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.error('Error setting up request:', error.message);
+                    setError('Error in sending request');
+                }
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    }, []);
 
     return (
-        <div className="plant-list">
-            {plants.map(plant => (
-                <div key={plant.id} className="plant-card">
-                    <img src={plant.imgSrc} alt={plant.name} className="plant-image"/>
-                    <h3>{plant.name}</h3>
-                    <p>{plant.description}</p>
-                </div>
-            ))}
+        <div>
+            <h2>Plant List</h2>
+            {isLoading && <p>Loading...</p>}
+            {error && <p>Error: {error}</p>}
+            {!isLoading && !error && (
+                plants.length > 0 ? (
+                    <ul>
+                        {plants.map(plant => <li key={plant.id}>{plant.name}</li>)}
+                    </ul>
+                ) : (
+                    <p>No plants found.</p>
+                )
+            )}
         </div>
     );
 };
