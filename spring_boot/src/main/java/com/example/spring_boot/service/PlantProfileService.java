@@ -1,100 +1,56 @@
 package com.example.spring_boot.service;
 
 import com.example.spring_boot.entity.PlantProfile;
-import java.sql.*;
-import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 
-public class PlantProfileService implements Verifiable {
+import java.util.List;
 
-    @Override
-    public void checkArguments(String string, Connection connection) {
-        if (connection == null || string == null || string.isEmpty()) {
-            throw new NullPointerException("Arguments are null or empty");
-        }
+@Service
+public class PlantProfileService {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public PlantProfileService(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    public void savePlantProfile(String name, double moisture, Connection connection) {
-        checkArguments(name, connection);
-        String sqlQuery = "INSERT INTO plant_profiles (name, moisture) VALUES (?, ?)";
-
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            statement.setString(1, name);
-            statement.setDouble(2, moisture);
-
-            int result = statement.executeUpdate();
-            System.out.println(result == 1 ? "Save complete" : "Save failed");
-        } catch (SQLException e) {
-            System.out.println("An error occurred while registering a plant profile: " + e);
-        }
+    public void savePlantProfile(PlantProfile plantProfile) {
+        String sqlQuery = "INSERT INTO plant_profile (id, name, moisture) VALUES (?, ?, ?)";
+        jdbcTemplate.update(sqlQuery, plantProfile.getId(), plantProfile.getName(), plantProfile.getMoisture());
     }
 
-    public ArrayList<PlantProfile> fetchPlantProfiles(Connection connection) {
-        ArrayList<PlantProfile> plantProfiles = new ArrayList<>();
-
-        String sqlQuery = "SELECT * FROM plant_profiles";
-
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sqlQuery)) {
-
-            while (resultSet.next()) {
-                String id = resultSet.getString("id");
-                String name = resultSet.getString("name");
-                double moisture = resultSet.getDouble("moisture");
-                plantProfiles.add(new PlantProfile(id, name, moisture));
-            }
-        } catch (SQLException e) {
-            System.out.println("An error occurred while fetching plant profiles: " + e);
-        }
-        return plantProfiles;
+    public List<PlantProfile> fetchPlantProfiles() {
+        String sqlQuery = "SELECT * FROM plant_profile";
+        return jdbcTemplate.query(sqlQuery, (rs, rowNum) ->
+                new PlantProfile(
+                        rs.getString("id"),
+                        rs.getString("name"),
+                        rs.getDouble("moisture")
+                )
+        );
     }
 
-    public PlantProfile fetchPlantProfileById(String id, Connection connection) {
-        checkArguments(id, connection);
-        String sqlQuery = "SELECT * FROM plant_profiles WHERE id = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            statement.setString(1, id);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    String name = resultSet.getString("name");
-                    double moisture = resultSet.getDouble("moisture");
-                    return new PlantProfile(id, name, moisture);
-                }
-            }
-        } catch (SQLException e) {
-            System.out.println("An error occurred while fetching plant profile " + id + ": " + e);
-        }
-        return null; // Or throw an exception?
+    public PlantProfile fetchPlantProfileById(String id) {
+        String sqlQuery = "SELECT * FROM plant_profile WHERE id = ?";
+        return jdbcTemplate.queryForObject(sqlQuery, new Object[]{id}, (rs, rowNum) ->
+                new PlantProfile(
+                        rs.getString("id"),
+                        rs.getString("name"),
+                        rs.getDouble("moisture")
+                )
+        );
     }
 
-    public void updatePlantProfile(String id, String name, double moisture, Connection connection) {
-        checkArguments(id, connection);
-        String sqlQuery = "UPDATE plant_profiles SET name = ?, moisture = ? WHERE id = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            statement.setString(1, name);
-            statement.setDouble(2, moisture);
-            statement.setString(3, id);
-
-            int result = statement.executeUpdate();
-            System.out.println(result == 1 ? "Update successful" : "Update failed");
-        } catch (SQLException e) {
-            System.out.println("An error occurred while updating plant profile " + id + ": " + e);
-        }
+    public void updatePlantProfile(String id, String name, double moisture) {
+        String sqlQuery = "UPDATE plant_profile SET name = ?, moisture = ? WHERE id = ?";
+        jdbcTemplate.update(sqlQuery, name, moisture, id);
     }
 
-    public void deletePlantProfile(String id, Connection connection) {
-        checkArguments(id, connection);
-        String sqlQuery = "DELETE FROM plant_profiles WHERE id = ?";
-
-        try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-            statement.setString(1, id);
-
-            int result = statement.executeUpdate();
-            System.out.println(result == 1 ? "Deletion successful" : "Deletion failed");
-        } catch (SQLException e) {
-            System.out.println("An error occurred while deleting plant profile " + id + ": " + e);
-        }
+    public void deletePlantProfile(String id) {
+        String sqlQuery = "DELETE FROM plant_profile WHERE id = ?";
+        jdbcTemplate.update(sqlQuery, id);
     }
 }

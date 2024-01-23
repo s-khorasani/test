@@ -1,0 +1,11 @@
+.plant-profile {
+    transition: transform 0.3s ease-in-out;
+    background-color: #95c482;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.plant-profile:hover {
+    transform: scale(1.05);
+}

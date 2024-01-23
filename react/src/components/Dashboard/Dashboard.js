@@ -1,9 +1,9 @@
 import React from 'react';
 import './Dashboard.css';
-import UserPanel from '../UserPanel/UserPanel';
-import PlantList from '../PlantList/PlantList';
-import PlantProfiles from '../PlantProfiles/PlantProfiles';
-import ContainerDetails from '../ContainerDetails/ContainerDetails';
+import User from '../UserPanel/User';
+import Plant from '../PlantList/Plant';
+import PlantProfile from '../PlantProfiles/PlantProfile';
+import Container from '../Container/Container';
 import logoPlantBuddy from '../../assets/images/Logo Plant Buddy resized.png';
 
 const Sidebar = () => {
@@ -25,10 +25,10 @@ const Dashboard = () => {
         <div className="dashboard">
             <Sidebar />
             <div className="main-content">
-                <div className="dashboard-component"><UserPanel /></div>
-                <div className="dashboard-component"><PlantList /></div>
-                <div className="dashboard-component"><PlantProfiles /></div>
-                <div className="dashboard-component"><ContainerDetails /></div>
+                <div className="dashboard-component"><User /></div>
+                <div className="dashboard-component"><Plant /></div>
+                <div className="dashboard-component"><PlantProfile /></div>
+                <div className="dashboard-component"><Container /></div>
             </div>
         </div>
     );

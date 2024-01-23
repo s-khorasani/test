@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/plants")
 public class PlantController {
 
     private final PlantService plantService;
@@ -37,12 +37,12 @@ public class PlantController {
         return plants.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(plants);
     }
 
-//    @CrossOrigin(origins = "http://localhost:3000")
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Plant> getPlantById(@PathVariable String id) {
-//        Plant plant = plantService.fetchPlantById(id);
-//        return plant != null ? ResponseEntity.ok(plant) : ResponseEntity.notFound().build();
-//    }
+    @CrossOrigin(origins = "http://localhost:3000")
+    @GetMapping("/{id}")
+    public ResponseEntity<Plant> getPlantById(@PathVariable String id) {
+        Plant plant = plantService.fetchPlantById(id);
+        return plant != null ? ResponseEntity.ok(plant) : ResponseEntity.notFound().build();
+    }
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PutMapping("/{id}")
